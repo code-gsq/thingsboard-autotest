@@ -73,7 +73,13 @@ jobs:
           allure_results: allure-results
           allure_history: allure-history
 
-      # 3) 把 allure-history 推送到 gh-pages 分支，供 GitHub Pages 展示
+      # 3) 清理 simple-elf 动作残留的 .git（root 权限创建，peaceiris 删不掉会报 EACCES）
+      - name: Clean stray .git in allure-history
+        if: always()
+        run: sudo rm -rf allure-history/.git || true
+
+      # 4) 把 allure-history 推送到 gh-pages 分支，供 GitHub Pages 展示
+      #    force_orphan 修复首次部署时 commit 落到 master、导致 push gh-pages 报 "src refspec does not match"
       - name: Publish Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         if: always()
@@ -81,3 +87,4 @@ jobs:
           github_token: ${{ github.token }}
           publish_branch: gh-pages
           publish_dir: allure-history
+          force_orphan: true
