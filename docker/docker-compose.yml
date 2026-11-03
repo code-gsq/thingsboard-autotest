@@ -1,7 +1,7 @@
 services:
   mytb:
     restart: always                                # 开机/崩溃后自动重启
-    image: "thingsboard/tb-postgres"               # 社区版 + 内置 PostgreSQL
+    image: "thingsboard/tb-postgres:3.9.1"         # 社区版 + 内置 PostgreSQL（锁版本，4.x 登录接口已改）
     ports:
       - "8080:9090"                                # 网页界面（本机8080 → 容器9090）
       - "1883:1883"                                # MQTT 端口（设备上报走这里）

@@ -13,7 +13,7 @@
 | 接口请求 | requests |
 | UI 自动化 | pytest-playwright |
 | 测试报告 | allure-pytest |
-| 被测系统 | ThingsBoard 4.x（Docker 部署） |
+| 被测系统 | ThingsBoard 3.9.1（Docker 部署，锁版本） |
 
 ## 目录结构
 

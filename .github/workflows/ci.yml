@@ -11,9 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     # 用服务容器拉起 ThingsBoard（和本地 docker-compose.yml 同一个镜像、同一个配置）
+    # ⚠️ 必须锁版本：latest(4.x) 已把 /api/auth/login 改成 OAuth2 登录，返回 HTML 而非 JSON，导致登录/接口/UI 用例全部挂掉
     services:
       thingsboard:
-        image: thingsboard/tb-postgres
+        image: thingsboard/tb-postgres:3.9.1
         ports:
           - 8080:9090            # 网页接口：宿主8080 → 容器9090
         env:
@@ -35,14 +36,16 @@ jobs:
 
       - name: Wait for ThingsBoard to be ready
         run: |
-          for i in {1..60}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/login)
-            if [ "$code" = "200" ]; then
-              echo "ThingsBoard is up"; exit 0
+          # 轮询登录接口直到真正返回 JSON token：既等数据库迁移完成，也提前验证登录可用
+          for i in {1..90}; do
+            if curl -s -X POST http://localhost:8080/api/auth/login \
+                 -H "Content-Type: application/json" \
+                 -d '{"username":"tenant@thingsboard.org","password":"tenant"}' | grep -q '"token"'; then
+              echo "ThingsBoard is up and login API works"; exit 0
             fi
             sleep 5
           done
-          echo "ThingsBoard failed to start"; exit 1
+          echo "ThingsBoard failed to become ready"; exit 1
 
       - name: Run all tests
         run: python -m pytest -v --alluredir=allure-results
