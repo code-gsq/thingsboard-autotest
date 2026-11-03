@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 测试缓存
+.pytest_cache/
+
+# 虚拟环境
+.venv/
+venv/
+
+# Allure 报告（结果和生成的 HTML 都不提交）
+reports/allure-results/
+reports/allure-report/
+
+# IDE
+.idea/
+.vscode/
+
+# 系统
+.DS_Store
+Thumbs.db

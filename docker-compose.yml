@@ -1,0 +1,19 @@
+  services:
+    mytb:
+      restart: always                                # 开机/崩溃后自动重启
+      image: "thingsboard/tb-postgres"               # 社区版 + 内置 PostgreSQL
+      ports:
+        - "8080:9090"                                # 网页界面（本机8080 → 容器9090）
+        - "1883:1883"                                # MQTT 端口（设备上报走这里）
+        - "7070:7070"                                # Edge RPC 端口
+        - "5683-5688:5683-5688/udp"                  # CoAP/LwM2M 端口
+        - "5432:5432"                                # PostgreSQL（给 DBeaver 连，可选）
+      environment:
+        TB_QUEUE_TYPE: in-memory                     # 队列放内存，本地测试够用
+      volumes:
+        - mytb-data:/data                            # 数据持久化
+        - mytb-logs:/var/log/thingsboard             # 日志持久化
+
+  volumes:
+    mytb-data:
+    mytb-logs:
