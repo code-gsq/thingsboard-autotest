@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+# 允许 GITHUB_TOKEN 推送 gh-pages 分支（发布 Allure 报告）
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -51,11 +55,29 @@ jobs:
         run: python -m pytest -v --alluredir=allure-results
 
       # 用例挂了也照样出报告（if: always()），否则看不到是哪条失败
-      - name: Publish Allure report
+      # 1) 拉取历史报告（首次 gh-pages 分支不存在，用 continue-on-error 容错）
+      - name: Load report history
+        uses: actions/checkout@v4
         if: always()
-        uses: simple-elf/allure-report-action@v1.15
+        continue-on-error: true
         with:
-          allure_results: allure-results
-          allure_report: allure-report
+          ref: gh-pages
+          path: gh-pages
+
+      # 2) 生成 Allure 报告（含历史）
+      - name: Build Allure report
+        uses: simple-elf/allure-report-action@v1.15
+        if: always()
+        with:
           gh_pages: gh-pages
+          allure_results: allure-results
           allure_history: allure-history
+
+      # 3) 把 allure-history 推送到 gh-pages 分支，供 GitHub Pages 展示
+      - name: Publish Allure report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ github.token }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
