@@ -14,6 +14,10 @@ venv/
 reports/allure-results/
 reports/allure-report/
 
+# MQTT 模拟器运行产物（tokens.json 含真实设备 token，严禁提交）
+mqtt_simulator/tokens.json
+mqtt_simulator/stress_report.csv
+
 # IDE
 .idea/
 .vscode/
