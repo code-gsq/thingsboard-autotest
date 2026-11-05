@@ -21,6 +21,7 @@ jobs:
         image: thingsboard/tb-postgres:3.9.1
         ports:
           - 8080:9090            # 网页接口：宿主8080 → 容器9090
+          - 1883:1883            # MQTT 端口：设备模拟器上报走这里
         env:
           TB_QUEUE_TYPE: in-memory
 
